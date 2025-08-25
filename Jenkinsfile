@@ -30,7 +30,9 @@ pipeline {
     } 
     stage('Kubernetes Deploy') {
             steps {
-              sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${appRegistry}:V${BUILD_NUMBER} --namespace prod"
+              withCredentials([file(credentialsId: 'kind-kubeconfig', variable: 'KUBECONFIG')]) {
+                 sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${appRegistry}:V${BUILD_NUMBER} --namespace prod"
+                 }
             }
         }
   }
