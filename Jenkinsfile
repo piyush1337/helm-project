@@ -31,8 +31,13 @@ pipeline {
     stage('Kubernetes Deploy') {
             steps {
               withCredentials([file(credentialsId: 'kind-kubeconfig', variable: 'KUBECONFIG')]) {
-                 sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${appRegistry}:V${BUILD_NUMBER} --namespace prod"
-                 }
+                 sh """
+                 helm upgrade --install --force vprofile-stack helm/vprofilecharts \
+                        --set appimage=${appRegistry}:V${BUILD_NUMBER} \
+                        --set imagePullSecrets[0].name=ecr-reg-cred \
+                        --namespace prod
+                 """
+                }
             }
         }
   }
