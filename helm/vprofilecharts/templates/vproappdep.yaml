@@ -21,6 +21,8 @@ spec:
           ports:
             - name: vproapp-port
               containerPort: 8080
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       initContainers:
         - name: init-mydb
           image: debian:stable-slim
