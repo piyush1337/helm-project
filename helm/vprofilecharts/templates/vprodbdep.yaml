@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprodb
+  labels:
+    app: vprodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vprodb
+  template:
+    metadata:
+      labels:
+        app: vprodb
+    spec:
+      nodeSelector:
+        zone: us-east-2a
+      containers:
+        - name: vprodb
+          image: piyush1337/vprofiledb:v1
+          args:
+            - "--ignore-db-dir=lost+found"
+          ports:
+            - containerPort: 3306
+              name: vprodb-port
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: vpro-db-data
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: db-pass
+      volumes:
+        - name: vpro-db-data
+          hostPath:
+              path: /vprodb-data
+              type: DirectoryOrCreate
